@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  mysql:
+    image: mysql:5
+    restart: always
+    environment:
+      MYSQL_PASSWORD: ThePassword
+      MYSQL_USER: jmfy
+      MYSQL_ROOT_PASSWORD: ThePassword
+      MYSQL_DATABASE: todomvc
+    ports:
+      - "3306:3306"
