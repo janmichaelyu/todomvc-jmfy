@@ -1,10 +1,17 @@
-import {Controller, Get, Post, Param, Put, Delete, Body, Patch} from '@nestjs/common';
+import {Controller, Get, Post, Param, Put, Delete, Body, Patch, Inject} from '@nestjs/common';
 import { Todo } from './todo.entity';
 import { TodoService } from './todo.service';
+import { PATH_METADATA } from '@nestjs/common/constants';
+import {AppController} from '../app.controller';
+import {RouterExplorer} from '@nestjs/core/router/router-explorer';
 
 @Controller('todos')
 export class TodosController {
-    constructor(private readonly todoService: TodoService) {}
+    private base = 'http://localhost:3000/todos/';
+
+    constructor(
+        private readonly todoService: TodoService,
+    ) {}
 
     @Get()
     findAll(): Promise<Todo[]> {
@@ -18,7 +25,6 @@ export class TodosController {
 
     @Post()
     create(@Body() todo: Todo) {
-        todo.url = '/todos/';
         return this.todoService.update(todo);
     }
 
@@ -37,5 +43,14 @@ export class TodosController {
         return this.todoService.deleteAll();
     }
 
-    // @Patch()
+
+    @Patch(':id')
+    async patch(@Param() params, @Body() patch: Todo) {
+
+        let todo = await this.todoService.get(params.id);
+        todo.url = this.base + params.id;
+        todo = Object.assign(todo, patch);
+
+        return this.todoService.update(todo);
+    }
 }
